@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} · {{ site_meta.title }}{% endblock %}
+{% block meta_description %}{{ project.summary }}{% endblock %}
+
+{% block content %}
+<section class="project-hero" style="--accent: {{ project.card_accent }}">
+  <div class="shell project-hero__grid">
+    <div class="project-hero__meta">
+      <p class="project-hero__kicker">Проект</p>
+      <h1>{{ project.title }}</h1>
+      {% if project.summary %}
+        <p class="project-hero__summary">{{ project.summary }}</p>
+      {% endif %}
+      <dl class="project-hero__details">
+        {% if project.year_display %}
+          <div>
+            <dt>Год</dt>
+            <dd>{{ project.year_display }}</dd>
+          </div>
+        {% endif %}
+        {% if project.role %}
+          <div>
+            <dt>Роль</dt>
+            <dd>{{ project.role }}</dd>
+          </div>
+        {% endif %}
+        {% if project.tech %}
+          <div>
+            <dt>Технологии</dt>
+            <dd>{% for stack in project.tech %}<span>{{ stack }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+          </div>
+        {% endif %}
+      </dl>
+      <div class="project-hero__actions">
+        {% if project.github %}
+          <a class="button button--ghost" href="{{ project.github }}" target="_blank" rel="noopener">GitHub</a>
+        {% endif %}
+        {% if project.demo %}
+          <a class="button" href="{{ project.demo }}" target="_blank" rel="noopener">Демо</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="project-hero__visual">
+      {% set hero_path = project.hero_image or project.cover or default_hero %}
+      {% if hero_path.startswith('http') %}
+        <img src="{{ hero_path }}" alt="Превью проекта {{ project.title }}">
+      {% else %}
+        <img src="{{ url_for('static', filename=hero_path) }}" alt="Превью проекта {{ project.title }}">
+      {% endif %}
+    </div>
+  </div>
+</section>
+<section class="project-content">
+  <div class="shell">
+    <article class="project-article">
+      {{ project.content | safe }}
+    </article>
+  </div>
+</section>
+<section class="project-meta">
+  <div class="shell">
+    <a class="back-link" href="{{ url_for('index') }}#projects">← Вернуться к проектам</a>
+  </div>
+</section>
+{% endblock %}

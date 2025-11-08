@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_meta.title }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ site_meta.description }}{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="theme-light">
+  <header class="site-header">
+    <div class="shell site-header__inner">
+      <a class="brand" href="{{ url_for('index') }}">
+        {% set avatar = site_meta.get('brand_avatar') %}
+        <span class="brand__mark">
+          {% if avatar %}
+            {% if avatar.startswith('http') %}
+              <img src="{{ avatar }}" alt="{{ site_meta.title }} logo">
+            {% else %}
+              <img src="{{ url_for('static', filename=avatar) }}" alt="{{ site_meta.title }} logo">
+            {% endif %}
+          {% else %}
+            {{ site_meta.title[0]|upper }}
+          {% endif %}
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">{{ site_meta.title }}</span>
+          <span class="brand__subtitle">Software engineering student</span>
+        </span>
+      </a>
+      <nav class="primary-nav site-header__nav">
+        {% set is_home = request.endpoint == 'index' %}
+        {% for item in site_meta.nav %}
+          {% set target = url_for('index') + item.href %}
+          {% set is_active = is_home and item.href == '#top' %}
+          <a class="nav-chip" data-chip="{{ item.label }}" href="{{ target }}"{% if is_active %} aria-current="page"{% endif %}>{{ item.label }}</a>
+        {% endfor %}
+      </nav>
+      <div class="site-header__actions">
+        <button class="mode-toggle" type="button" aria-label="Переключить тему">
+          <span class="mode-toggle__icon" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div class="shell">
+      <p>© {{ current_year }} {{ site_meta.title }}. Сделано с вниманием к деталям.</p>
+      <div class="footer-links">
+        {% if site_meta.contacts.github %}
+          <a href="{{ site_meta.contacts.github }}" target="_blank" rel="noopener">GitHub</a>
+        {% endif %}
+        {% if site_meta.contacts.linkedin %}
+          <a href="{{ site_meta.contacts.linkedin }}" target="_blank" rel="noopener">LinkedIn</a>
+        {% endif %}
+        {% if site_meta.contacts.telegram %}
+          <a href="{{ site_meta.contacts.telegram }}" target="_blank" rel="noopener">Telegram</a>
+        {% endif %}
+        {% if site_meta.contacts.email %}
+          <a href="mailto:{{ site_meta.contacts.email }}">Email</a>
+        {% endif %}
+      </div>
+    </div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body>
+</html>
