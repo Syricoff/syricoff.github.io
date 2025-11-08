@@ -6,7 +6,7 @@ year: 2025
 role: "Архитектор и ведущий разработчик backend"
 tech:
   - FastAPI
-  - aiogram 
+  - aiogram
   - PostgreSQL
 card_accent: "#5cdf28ff"
 cover: "img/project-cover-placeholder.svg"
