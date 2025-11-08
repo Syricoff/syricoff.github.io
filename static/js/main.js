@@ -1,4 +1,5 @@
 (function () {
+    const html = document.documentElement;
     const body = document.body;
     const toggle = document.querySelector('.mode-toggle');
     const header = document.querySelector('.site-header');
@@ -7,21 +8,58 @@
     const navChips = document.querySelectorAll('.nav-chip');
     const sections = document.querySelectorAll('.page-section');
     const STORAGE_KEY = 'syricoff-theme';
+    const prefersColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const setTheme = (mode) => {
-        body.classList.remove('theme-light', 'theme-dark');
-        body.classList.add(mode);
-        localStorage.setItem(STORAGE_KEY, mode);
+    const getSystemTheme = () => {
+        return prefersColorScheme.matches ? 'theme-dark' : 'theme-light';
     };
 
-    const preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const saved = localStorage.getItem(STORAGE_KEY);
-    setTheme(saved || (preferDark ? 'theme-dark' : 'theme-light'));
+    const getCurrentTheme = () => {
+        if (html.classList.contains('theme-dark')) return 'theme-dark';
+        if (html.classList.contains('theme-light')) return 'theme-light';
+        return null;
+    };
+
+    const setTheme = (mode) => {
+        html.classList.remove('theme-light', 'theme-dark');
+        if (mode === 'auto') {
+            localStorage.removeItem(STORAGE_KEY);
+        } else {
+            html.classList.add(mode);
+            localStorage.setItem(STORAGE_KEY, mode);
+        }
+    };
+
+    const initTheme = () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            setTheme(saved);
+        } else {
+            html.classList.remove('theme-light', 'theme-dark');
+        }
+    };
+
+    initTheme();
+
+    prefersColorScheme.addEventListener('change', (e) => {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            html.classList.remove('theme-light', 'theme-dark');
+        }
+    });
 
     if (toggle) {
         toggle.addEventListener('click', () => {
-            const next = body.classList.contains('theme-dark') ? 'theme-light' : 'theme-dark';
-            setTheme(next);
+            const current = getCurrentTheme();
+            const system = getSystemTheme();
+
+            if (!current) {
+                const next = system === 'theme-dark' ? 'theme-light' : 'theme-dark';
+                setTheme(next);
+            } else if (current === 'theme-light') {
+                setTheme('theme-dark');
+            } else {
+                setTheme('theme-light');
+            }
         });
     }
 

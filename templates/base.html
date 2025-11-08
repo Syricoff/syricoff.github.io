@@ -9,8 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('syricoff-theme');
+      if (saved) {
+        document.documentElement.classList.add(saved);
+      }
+    })();
+  </script>
 </head>
-<body class="theme-light">
+<body>
   <header class="site-header">
     <div class="shell site-header__inner">
       <a class="brand" href="{{ url_for('index') }}">
