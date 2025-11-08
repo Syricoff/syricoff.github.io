@@ -50,6 +50,22 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
+body.nav-open {
+    overflow: hidden;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -220,6 +236,48 @@ img {
     align-items: center;
     gap: 0.75rem;
     flex-shrink: 0;
+}
+
+.nav-toggle {
+    display: none;
+    border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: inherit;
+    border-radius: var(--radius-md);
+    padding: 0.55rem;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-toggle:hover,
+.nav-toggle:focus-visible {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+}
+
+.nav-toggle__line {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-toggle__line+.nav-toggle__line {
+    margin-top: 4px;
+}
+
+.site-header--nav-open .nav-toggle__line:nth-of-type(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.site-header--nav-open .nav-toggle__line:nth-of-type(2) {
+    opacity: 0;
+}
+
+.site-header--nav-open .nav-toggle__line:nth-of-type(3) {
+    transform: translateY(-6px) rotate(-45deg);
 }
 
 .pill-link {
@@ -882,9 +940,40 @@ body.theme-dark .mode-toggle__icon {
     background: transparent;
 }
 
+@media (max-width: 1024px) {
+    .shell {
+        padding: 0 1.35rem;
+    }
+
+    .site-header__inner {
+        gap: 1.5rem;
+    }
+
+    .site-main {
+        gap: 5rem;
+        padding: 4rem 0 5rem;
+    }
+
+    .hero {
+        padding: 5rem 0 4.5rem;
+    }
+
+    .hero__grid {
+        gap: 3rem;
+    }
+
+    .hero__card {
+        padding: 1.85rem;
+    }
+
+    .projects__grid {
+        gap: 2rem;
+    }
+}
+
 @media (max-width: 768px) {
-    .primary-nav {
-        display: none;
+    .site-header {
+        overflow: visible;
     }
 
     .site-header__inner {
@@ -902,12 +991,42 @@ body.theme-dark .mode-toggle__icon {
         font-size: 1.05rem;
     }
 
-    .site-header__actions {
-        gap: 0.5rem;
+    .nav-toggle {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
     }
 
-    .site-header__actions .pill-link:not(.pill-link--accent) {
+    .primary-nav {
+        position: absolute;
+        top: calc(100% + 0.75rem);
+        left: 0;
+        right: 0;
         display: none;
+        flex-direction: column;
+        gap: 0.35rem;
+        padding: 1.25rem;
+        margin: 0;
+        background: color-mix(in srgb, var(--bg-elevated) 98%, transparent);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .site-header--nav-open .primary-nav {
+        display: flex;
+    }
+
+    .nav-chip {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.65rem 1rem;
+    }
+
+    .site-header__actions {
+        gap: 0.5rem;
     }
 
     .site-main {
@@ -915,9 +1034,52 @@ body.theme-dark .mode-toggle__icon {
         padding: 3rem 0 4.5rem;
     }
 
+    .hero {
+        padding: 4.5rem 0 3.5rem;
+    }
+
+    .hero__grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .hero__card {
+        order: -1;
+    }
+
+    .hero__cta {
+        width: 100%;
+    }
+
+    .hero__cta .button {
+        flex: 1;
+        min-width: 0;
+        justify-content: center;
+    }
+
+    .about__grid,
+    .contact__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about__panel,
+    .contact__card,
+    .project-card {
+        padding: 1.75rem;
+    }
+
+    .about__panel {
+        align-self: stretch;
+    }
+
     .section-title {
         padding: 0.75rem 1.1rem;
-        font-size: clamp(1.8rem, 5.4vw, 2.3rem);
+        font-size: clamp(1.75rem, 6vw, 2.25rem);
+    }
+
+    .projects__grid {
+        gap: 1.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     }
 
     .project-article {

@@ -31,7 +31,7 @@
           <span class="brand__subtitle">Software engineering student</span>
         </span>
       </a>
-      <nav class="primary-nav site-header__nav">
+      <nav class="primary-nav site-header__nav" id="primary-nav">
         {% set is_home = request.endpoint == 'index' %}
         {% for item in site_meta.nav %}
           {% set target = url_for('index') + item.href %}
@@ -40,6 +40,12 @@
         {% endfor %}
       </nav>
       <div class="site-header__actions">
+        <button class="nav-toggle" type="button" aria-label="Переключить меню" aria-expanded="false" aria-controls="primary-nav">
+          <span class="nav-toggle__line" aria-hidden="true"></span>
+          <span class="nav-toggle__line" aria-hidden="true"></span>
+          <span class="nav-toggle__line" aria-hidden="true"></span>
+          <span class="visually-hidden">Меню</span>
+        </button>
         <button class="mode-toggle" type="button" aria-label="Переключить тему">
           <span class="mode-toggle__icon" aria-hidden="true"></span>
         </button>

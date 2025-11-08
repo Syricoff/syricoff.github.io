@@ -1,6 +1,9 @@
 (function () {
     const body = document.body;
     const toggle = document.querySelector('.mode-toggle');
+    const header = document.querySelector('.site-header');
+    const navToggle = document.querySelector('.nav-toggle');
+    const primaryNav = document.querySelector('.primary-nav');
     const navChips = document.querySelectorAll('.nav-chip');
     const sections = document.querySelectorAll('.page-section');
     const STORAGE_KEY = 'syricoff-theme';
@@ -21,6 +24,66 @@
             setTheme(next);
         });
     }
+
+    const closeNav = () => {
+        if (header) {
+            header.classList.remove('site-header--nav-open');
+        }
+        body.classList.remove('nav-open');
+        if (navToggle) {
+            navToggle.setAttribute('aria-expanded', 'false');
+        }
+    };
+
+    if (navToggle && primaryNav && header) {
+        navToggle.addEventListener('click', () => {
+            const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+
+            if (isExpanded) {
+                closeNav();
+            } else {
+                header.classList.add('site-header--nav-open');
+                body.classList.add('nav-open');
+                navToggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeNav();
+            }
+        });
+    }
+
+    if (navChips.length) {
+        navChips.forEach((chip) => {
+            chip.addEventListener('click', () => {
+                closeNav();
+            });
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeNav();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!header || !header.classList.contains('site-header--nav-open')) {
+            return;
+        }
+
+        if (primaryNav && primaryNav.contains(event.target)) {
+            return;
+        }
+
+        if (navToggle && navToggle.contains(event.target)) {
+            return;
+        }
+
+        closeNav();
+    });
 
     let activeHash = null;
 
@@ -61,7 +124,6 @@
     }
 
     if (sections.length && navChips.length) {
-        const header = document.querySelector('.site-header');
         let ticking = false;
 
         const syncActiveFromScroll = () => {
