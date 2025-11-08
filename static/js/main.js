@@ -123,84 +123,132 @@
         closeNav();
     });
 
+    // Navigation state management
     let activeHash = null;
+    let isUserScrolling = true;
+    let scrollTimeout = null;
+    let isNavigating = false;
 
-    const setActiveChip = (hash, manageHistory = false) => {
-        if (!hash) {
-            return;
-        }
+    const setActiveChip = (hash, updateHistory = false) => {
+        if (!hash) return;
 
         const normalizedHash = hash === '#' || hash === '' ? '#top' : hash;
 
-        if (normalizedHash === activeHash) {
-            return;
-        }
+        if (normalizedHash === activeHash) return;
 
         const targetChip = Array.from(navChips).find((chip) => chip.hash === normalizedHash);
-
-        if (!targetChip) {
-            return;
-        }
+        if (!targetChip) return;
 
         navChips.forEach((chip) => chip.removeAttribute('aria-current'));
         targetChip.setAttribute('aria-current', 'page');
         activeHash = normalizedHash;
 
-        if (manageHistory && history.replaceState) {
-            history.replaceState(null, '', `${window.location.pathname}${normalizedHash === '#top' ? '' : normalizedHash}`);
+        if (updateHistory && history.replaceState) {
+            history.replaceState(null, '', normalizedHash === '#top' ? window.location.pathname : normalizedHash);
         }
     };
 
-    const updateActiveNav = () => {
-        setActiveChip(window.location.hash || '#top');
+    const updateNavFromHash = () => {
+        const hash = window.location.hash || '#top';
+        setActiveChip(hash, false);
     };
 
+    const getSectionInView = () => {
+        const headerHeight = header ? header.offsetHeight : 0;
+        const scrollPos = window.scrollY + headerHeight + 100;
+
+        // Check from bottom to top to prioritize sections higher on page when multiple are visible
+        for (let i = sections.length - 1; i >= 0; i--) {
+            const section = sections[i];
+            const top = section.offsetTop;
+            const bottom = top + section.offsetHeight;
+
+            if (scrollPos >= top && scrollPos < bottom) {
+                return section;
+            }
+        }
+
+        // If we're at the very top, return first section
+        if (window.scrollY < 100) {
+            return sections[0];
+        }
+
+        // If we're near the bottom, return last section
+        const docHeight = document.documentElement.scrollHeight;
+        const windowHeight = window.innerHeight;
+        if (window.scrollY + windowHeight >= docHeight - 100) {
+            return sections[sections.length - 1];
+        }
+
+        return sections[0];
+    };
+
+    const syncNavFromScroll = () => {
+        if (isNavigating) return;
+
+        const currentSection = getSectionInView();
+        if (currentSection) {
+            setActiveChip(`#${currentSection.id}`, true);
+        }
+    };
+
+    // Handle manual scroll detection
+    const onScroll = () => {
+        isUserScrolling = true;
+
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            isUserScrolling = false;
+            isNavigating = false;
+        }, 150);
+
+        requestAnimationFrame(syncNavFromScroll);
+    };
+
+    // Handle navigation clicks
     if (navChips.length) {
-        window.addEventListener('hashchange', updateActiveNav);
-        window.addEventListener('load', updateActiveNav);
-        updateActiveNav();
+        navChips.forEach((chip) => {
+            chip.addEventListener('click', (e) => {
+                const targetHash = chip.hash;
+
+                if (targetHash) {
+                    isNavigating = true;
+                    isUserScrolling = false;
+
+                    // Update active state immediately
+                    setActiveChip(targetHash, false);
+
+                    // Let browser handle smooth scroll, then reset navigation flag
+                    setTimeout(() => {
+                        isNavigating = false;
+                    }, 1000);
+                }
+
+                closeNav();
+            });
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', () => {
+            if (!isNavigating) {
+                updateNavFromHash();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateNavFromHash();
+            syncNavFromScroll();
+        });
+
+        updateNavFromHash();
     }
 
+    // Attach scroll listener
     if (sections.length && navChips.length) {
-        let ticking = false;
-
-        const syncActiveFromScroll = () => {
-            if (!sections.length) {
-                return;
-            }
-
-            const offset = (header ? header.offsetHeight : 0) + 24;
-            const scrollPos = window.scrollY + offset;
-            let currentSection = sections[0];
-
-            sections.forEach((section) => {
-                const top = section.offsetTop;
-                const bottom = top + section.offsetHeight;
-
-                if (scrollPos >= top && scrollPos < bottom) {
-                    currentSection = section;
-                }
-            });
-
-            if (currentSection) {
-                setActiveChip(`#${currentSection.id}`, true);
-            }
-        };
-
-        const onScroll = () => {
-            if (ticking) {
-                return;
-            }
-
-            ticking = true;
-            window.requestAnimationFrame(() => {
-                syncActiveFromScroll();
-                ticking = false;
-            });
-        };
-
         window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('load', syncActiveFromScroll);
-        syncActiveFromScroll();
+
+        // Initial sync
+        requestAnimationFrame(syncNavFromScroll);
     }
 })();
