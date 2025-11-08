@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Страница не найдена · {{ site_meta.title }}{% endblock %}
+
+{% block content %}
+<section class="not-found">
+  <div class="shell not-found__inner">
+    <h1>404</h1>
+    <p>Кажется, эта страница ушла в другой спринт. Попробуйте вернуться на главную и выбрать проект.</p>
+    <a class="button" href="{{ url_for('index') }}">На главную</a>
+  </div>
+</section>
+{% endblock %}

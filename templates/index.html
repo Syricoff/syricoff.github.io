@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_meta.title }}{% endblock %}
+
+{% block content %}
+<section class="hero page-section" id="top">
+  <div class="shell hero__grid">
+    <div class="hero__copy">
+      <p class="hero__kicker">{{ site_meta.tagline }}</p>
+      <h1>Создаю первые pet-проекты и прокачиваю инженерное мышление</h1>
+      <p class="hero__lead">Совмещаю учёбу в Бауманке с практикой: пишу учебные сервисы на Python и C++, разбираюсь с фронтендом и не боюсь экспериментировать с новыми инструментами.</p>
+      <div class="hero__cta">
+        <a class="button" href="#projects">Смотреть проекты</a>
+        <a class="button button--ghost" href="#contact">Написать</a>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <div class="hero__card">
+        <div class="hero__badge">Учусь и пробую новое</div>
+        <h2>Фокус сейчас</h2>
+        <p>Строю фундамент: алгоритмы, паттерны и маленькие веб-приложения.</p>
+        <ul class="hero__list">
+          <li><span>Учёба:</span> программная инженерия, МГТУ им. Н. Э. Баумана</li>
+          <li><span>Практика:</span> pet-проекты на Python и Flask, учебные задачи на C++</li>
+          <li><span>Цель:</span> стажировка и работа в команде летом 2026</li>
+        </ul>
+        <div class="hero__tags">
+          <span>Python</span>
+          <span>C++</span>
+          <span>Flask</span>
+          <span>HTML/CSS</span>
+          <span>Git</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="about page-section" id="about">
+  <div class="shell about__grid">
+    <div>
+      <header class="section-heading">
+        <p class="section-kicker">Обо мне</p>
+        <h2 class="section-title">Учусь программной инженерии и собираю практику</h2>
+      </header>
+      <p>Меня зовут Syricoff. Изучаю фундаментальные дисциплины, участвую в лабораторных проектах и люблю, когда учебные задания превращаются в полезные инструменты. Пробую разные области — от алгоритмов до веба — чтобы понять, где смогу приносить наибольшую пользу.</p>
+      <ul class="about__highlights">
+        <li><strong>Учёба</strong> — курсы по алгоритмам, базам данных, архитектуре ПО.</li>
+        <li><strong>Самообразование</strong> — разбираюсь с веб-стеком, читаю про инженерную культуру.</li>
+        <li><strong>Командная работа</strong> — ищу стажировку или хакатон, чтобы прокачаться вместе с командой.</li>
+      </ul>
+    </div>
+    <div class="about__panel">
+      <h3>Что изучаю сейчас</h3>
+      <div class="about__tags">
+        <span>Python</span>
+        <span>C++</span>
+        <span>Flask</span>
+        <span>HTML & CSS</span>
+        <span>Основы React</span>
+        <span>Git & GitHub</span>
+        <span>Алгоритмы</span>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="projects page-section" id="projects">
+  <div class="shell">
+    <header class="section-heading">
+      <p class="section-kicker">Проекты</p>
+      <h2 class="section-title">Первые учебные кейсы</h2>
+      <p class="section-lead">Пока что проектов немного, но каждый — шаг, чтобы лучше понимать архитектуру, работу с данными и интерфейсы.</p>
+    </header>
+    <div class="projects__grid">
+      {% for project in projects %}
+        {% set cover_path = project.cover or default_cover %}
+        {% set project_url = url_for('project', slug=project.slug) %}
+        <article class="project-card" style="--accent: {{ project.card_accent }}">
+          <div class="project-card__cover">
+            {% if cover_path.startswith('http') %}
+              <img src="{{ cover_path }}" alt="{{ project.title }} cover">
+            {% else %}
+              <img src="{{ url_for('static', filename=cover_path) }}" alt="{{ project.title }} cover">
+            {% endif %}
+          </div>
+          <div class="project-card__body">
+            <p class="project-card__kicker">{{ project.role or 'Проект' }}</p>
+            <h3><a href="{{ project_url }}">{{ project.title }}</a></h3>
+            <p class="project-card__summary">{{ project.summary }}</p>
+            {% if project.tech %}
+              <ul class="project-card__tags">
+                {% for tag in project.tech[:4] %}
+                  <li>{{ tag }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          <div class="project-card__footer">
+            {% if project.github %}
+              <a class="project-card__link" href="{{ project.github }}" target="_blank" rel="noopener">GitHub</a>
+            {% endif %}
+            {% if project.demo %}
+              <a class="project-card__link" href="{{ project.demo }}" target="_blank" rel="noopener">Демо</a>
+            {% endif %}
+            <a class="project-card__link" href="{{ project_url }}">Подробнее</a>
+          </div>
+        </article>
+      {% else %}
+        <p class="projects__empty">Скоро здесь появятся первые pet-проекты. Добавьте файл в папку <code>projects</code>, чтобы показать кейс.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="contact page-section" id="contact">
+  <div class="shell contact__grid">
+    <div>
+      <header class="section-heading">
+        <p class="section-kicker">Связаться</p>
+        <h2 class="section-title">Готов к стажировке и наставничеству</h2>
+      </header>
+      <p>Буду рад поучаствовать в учебном проекте, стажировке или просто поговорить о разработке. Если есть советы, материалы или задачи — поделитесь, с удовольствием погружусь.</p>
+    </div>
+    <div class="contact__card">
+      {% set contacts = site_meta.contacts %}
+      {% set telegram_url = contacts.get('telegram') %}
+      {% set github_url = contacts.get('github') %}
+      {% set linkedin_url = contacts.get('linkedin') %}
+      {% set telegram_handle = telegram_url.rstrip('/').rsplit('/', 1)[-1] if telegram_url %}
+      {% set github_handle = github_url.rstrip('/').rsplit('/', 1)[-1] if github_url %}
+      {% set linkedin_handle = linkedin_url.rstrip('/').rsplit('/', 1)[-1] if linkedin_url %}
+      <ul>
+        {% if contacts.get('email') %}
+          <li><span>Email</span><a href="mailto:{{ contacts.get('email') }}">{{ contacts.get('email') }}</a></li>
+        {% endif %}
+        {% if telegram_url %}
+          <li><span>Telegram</span><a href="{{ telegram_url }}" target="_blank" rel="noopener">@{{ telegram_handle }}</a></li>
+        {% endif %}
+        {% if github_url %}
+          <li><span>GitHub</span><a href="{{ github_url }}" target="_blank" rel="noopener">github.com/{{ github_handle }}</a></li>
+        {% endif %}
+        {% if linkedin_url %}
+          <li><span>LinkedIn</span><a href="{{ linkedin_url }}" target="_blank" rel="noopener">linkedin.com/in/{{ linkedin_handle }}</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}
